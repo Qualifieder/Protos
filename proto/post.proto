@@ -6,6 +6,13 @@ option go_package = "./gen/go;post";
 
 service PostService {
   rpc CreateBoard(BoardRequest) returns (BoardResponse);
+  rpc GetBoard(BoardID) returns (BoardRequest);
+  rpc DeleteBoard(BoardID) returns(BoardResponse);  
+}
+
+
+message BoardID {
+  string id = 1;
 }
 
 message BoardRequest {

@@ -20,6 +20,8 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	PostService_CreateBoard_FullMethodName = "/proto.PostService/CreateBoard"
+	PostService_GetBoard_FullMethodName    = "/proto.PostService/GetBoard"
+	PostService_DeleteBoard_FullMethodName = "/proto.PostService/DeleteBoard"
 )
 
 // PostServiceClient is the client API for PostService service.
@@ -27,6 +29,8 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PostServiceClient interface {
 	CreateBoard(ctx context.Context, in *BoardRequest, opts ...grpc.CallOption) (*BoardResponse, error)
+	GetBoard(ctx context.Context, in *BoardID, opts ...grpc.CallOption) (*BoardRequest, error)
+	DeleteBoard(ctx context.Context, in *BoardID, opts ...grpc.CallOption) (*BoardResponse, error)
 }
 
 type postServiceClient struct {
@@ -47,11 +51,33 @@ func (c *postServiceClient) CreateBoard(ctx context.Context, in *BoardRequest, o
 	return out, nil
 }
 
+func (c *postServiceClient) GetBoard(ctx context.Context, in *BoardID, opts ...grpc.CallOption) (*BoardRequest, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(BoardRequest)
+	err := c.cc.Invoke(ctx, PostService_GetBoard_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *postServiceClient) DeleteBoard(ctx context.Context, in *BoardID, opts ...grpc.CallOption) (*BoardResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(BoardResponse)
+	err := c.cc.Invoke(ctx, PostService_DeleteBoard_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PostServiceServer is the server API for PostService service.
 // All implementations must embed UnimplementedPostServiceServer
 // for forward compatibility.
 type PostServiceServer interface {
 	CreateBoard(context.Context, *BoardRequest) (*BoardResponse, error)
+	GetBoard(context.Context, *BoardID) (*BoardRequest, error)
+	DeleteBoard(context.Context, *BoardID) (*BoardResponse, error)
 	mustEmbedUnimplementedPostServiceServer()
 }
 
@@ -64,6 +90,12 @@ type UnimplementedPostServiceServer struct{}
 
 func (UnimplementedPostServiceServer) CreateBoard(context.Context, *BoardRequest) (*BoardResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateBoard not implemented")
+}
+func (UnimplementedPostServiceServer) GetBoard(context.Context, *BoardID) (*BoardRequest, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetBoard not implemented")
+}
+func (UnimplementedPostServiceServer) DeleteBoard(context.Context, *BoardID) (*BoardResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteBoard not implemented")
 }
 func (UnimplementedPostServiceServer) mustEmbedUnimplementedPostServiceServer() {}
 func (UnimplementedPostServiceServer) testEmbeddedByValue()                     {}
@@ -104,6 +136,42 @@ func _PostService_CreateBoard_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PostService_GetBoard_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BoardID)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PostServiceServer).GetBoard(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PostService_GetBoard_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PostServiceServer).GetBoard(ctx, req.(*BoardID))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PostService_DeleteBoard_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BoardID)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PostServiceServer).DeleteBoard(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PostService_DeleteBoard_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PostServiceServer).DeleteBoard(ctx, req.(*BoardID))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // PostService_ServiceDesc is the grpc.ServiceDesc for PostService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -114,6 +182,14 @@ var PostService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateBoard",
 			Handler:    _PostService_CreateBoard_Handler,
+		},
+		{
+			MethodName: "GetBoard",
+			Handler:    _PostService_GetBoard_Handler,
+		},
+		{
+			MethodName: "DeleteBoard",
+			Handler:    _PostService_DeleteBoard_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
