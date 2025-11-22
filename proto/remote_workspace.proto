@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package proto;
+
+option go_package = "github.com/protos/gen/go";
+
+service PostService {
+
+
+  //CRUD 
+  rpc Put(BoardRequest) returns (BoardID);
+  rpc CreateBoard(BoardRequest) returns (BoardID);
+  rpc GetBoard(BoardID) returns (BoardRequest);
+  rpc DeleteBoard(BoardID) returns(BoardRequest);  
+}
+
+
+
+message BoardID {
+  string id = 1;
+}
+
+message BoardRequest {
+  string name = 1;
+  string id = 2;
+  bytes posts_list = 3; 
+}
+
+
