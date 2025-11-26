@@ -19,10 +19,11 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	PostService_Put_FullMethodName         = "/proto.PostService/Put"
-	PostService_CreateBoard_FullMethodName = "/proto.PostService/CreateBoard"
-	PostService_GetBoard_FullMethodName    = "/proto.PostService/GetBoard"
-	PostService_DeleteBoard_FullMethodName = "/proto.PostService/DeleteBoard"
+	PostService_Put_FullMethodName              = "/proto.PostService/Put"
+	PostService_CreateBoard_FullMethodName      = "/proto.PostService/CreateBoard"
+	PostService_GetBoard_FullMethodName         = "/proto.PostService/GetBoard"
+	PostService_DeleteBoard_FullMethodName      = "/proto.PostService/DeleteBoard"
+	PostService_ReturnStatusCode_FullMethodName = "/proto.PostService/ReturnStatusCode"
 )
 
 // PostServiceClient is the client API for PostService service.
@@ -34,6 +35,8 @@ type PostServiceClient interface {
 	CreateBoard(ctx context.Context, in *BoardRequest, opts ...grpc.CallOption) (*BoardID, error)
 	GetBoard(ctx context.Context, in *BoardID, opts ...grpc.CallOption) (*BoardRequest, error)
 	DeleteBoard(ctx context.Context, in *BoardID, opts ...grpc.CallOption) (*BoardRequest, error)
+	// Metrics
+	ReturnStatusCode(ctx context.Context, in *StatusCode, opts ...grpc.CallOption) (*StatusCodeRequest, error)
 }
 
 type postServiceClient struct {
@@ -84,6 +87,16 @@ func (c *postServiceClient) DeleteBoard(ctx context.Context, in *BoardID, opts .
 	return out, nil
 }
 
+func (c *postServiceClient) ReturnStatusCode(ctx context.Context, in *StatusCode, opts ...grpc.CallOption) (*StatusCodeRequest, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(StatusCodeRequest)
+	err := c.cc.Invoke(ctx, PostService_ReturnStatusCode_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PostServiceServer is the server API for PostService service.
 // All implementations must embed UnimplementedPostServiceServer
 // for forward compatibility.
@@ -93,6 +106,8 @@ type PostServiceServer interface {
 	CreateBoard(context.Context, *BoardRequest) (*BoardID, error)
 	GetBoard(context.Context, *BoardID) (*BoardRequest, error)
 	DeleteBoard(context.Context, *BoardID) (*BoardRequest, error)
+	// Metrics
+	ReturnStatusCode(context.Context, *StatusCode) (*StatusCodeRequest, error)
 	mustEmbedUnimplementedPostServiceServer()
 }
 
@@ -114,6 +129,9 @@ func (UnimplementedPostServiceServer) GetBoard(context.Context, *BoardID) (*Boar
 }
 func (UnimplementedPostServiceServer) DeleteBoard(context.Context, *BoardID) (*BoardRequest, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteBoard not implemented")
+}
+func (UnimplementedPostServiceServer) ReturnStatusCode(context.Context, *StatusCode) (*StatusCodeRequest, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ReturnStatusCode not implemented")
 }
 func (UnimplementedPostServiceServer) mustEmbedUnimplementedPostServiceServer() {}
 func (UnimplementedPostServiceServer) testEmbeddedByValue()                     {}
@@ -208,6 +226,24 @@ func _PostService_DeleteBoard_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PostService_ReturnStatusCode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StatusCode)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PostServiceServer).ReturnStatusCode(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PostService_ReturnStatusCode_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PostServiceServer).ReturnStatusCode(ctx, req.(*StatusCode))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // PostService_ServiceDesc is the grpc.ServiceDesc for PostService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -230,6 +266,10 @@ var PostService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteBoard",
 			Handler:    _PostService_DeleteBoard_Handler,
+		},
+		{
+			MethodName: "ReturnStatusCode",
+			Handler:    _PostService_ReturnStatusCode_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

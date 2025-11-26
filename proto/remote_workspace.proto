@@ -11,10 +11,19 @@ service PostService {
   rpc Put(BoardRequest) returns (BoardID);
   rpc CreateBoard(BoardRequest) returns (BoardID);
   rpc GetBoard(BoardID) returns (BoardRequest);
-  rpc DeleteBoard(BoardID) returns(BoardRequest);  
+  rpc DeleteBoard(BoardID) returns(BoardRequest); 
+
+  //Metrics
+  rpc ReturnStatusCode(StatusCode) returns (StatusCodeRequest);
 }
 
+message StatusCode {
+  int32 code = 1;
+}
 
+message StatusCodeRequest {
+  string info = 1;
+}
 
 message BoardID {
   string id = 1;
