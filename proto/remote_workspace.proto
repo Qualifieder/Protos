@@ -16,16 +16,19 @@ service PostService {
   //Metrics
 
   // Take a status code and return it
-  rpc ReturnStatusCode(StatusCode) returns (StatusCodeRequest);
+  rpc ReturnStatusCode(StatusCode) returns (StatusCodeResponse);
 }
 
 
 message StatusCode {
-  int32 code = 1;
+  int32 code = 1;  // числовой код gRPC статуса (0-16)
 }
 
-message StatusCodeRequest {
-  string info = 1;
+// Сообщение для ответа
+message StatusCodeResponse {
+  string message = 1;  // текстовое сообщение
+  int32 received_code = 2;  // полученный код
+  string status_name = 3;  // название статуса
 }
 
 message BoardID {

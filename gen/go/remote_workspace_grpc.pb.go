@@ -35,8 +35,8 @@ type PostServiceClient interface {
 	CreateBoard(ctx context.Context, in *BoardRequest, opts ...grpc.CallOption) (*BoardID, error)
 	GetBoard(ctx context.Context, in *BoardID, opts ...grpc.CallOption) (*BoardRequest, error)
 	DeleteBoard(ctx context.Context, in *BoardID, opts ...grpc.CallOption) (*BoardRequest, error)
-	// Metrics
-	ReturnStatusCode(ctx context.Context, in *StatusCode, opts ...grpc.CallOption) (*StatusCodeRequest, error)
+	// Take a status code and return it
+	ReturnStatusCode(ctx context.Context, in *StatusCode, opts ...grpc.CallOption) (*StatusCodeResponse, error)
 }
 
 type postServiceClient struct {
@@ -87,9 +87,9 @@ func (c *postServiceClient) DeleteBoard(ctx context.Context, in *BoardID, opts .
 	return out, nil
 }
 
-func (c *postServiceClient) ReturnStatusCode(ctx context.Context, in *StatusCode, opts ...grpc.CallOption) (*StatusCodeRequest, error) {
+func (c *postServiceClient) ReturnStatusCode(ctx context.Context, in *StatusCode, opts ...grpc.CallOption) (*StatusCodeResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(StatusCodeRequest)
+	out := new(StatusCodeResponse)
 	err := c.cc.Invoke(ctx, PostService_ReturnStatusCode_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -106,8 +106,8 @@ type PostServiceServer interface {
 	CreateBoard(context.Context, *BoardRequest) (*BoardID, error)
 	GetBoard(context.Context, *BoardID) (*BoardRequest, error)
 	DeleteBoard(context.Context, *BoardID) (*BoardRequest, error)
-	// Metrics
-	ReturnStatusCode(context.Context, *StatusCode) (*StatusCodeRequest, error)
+	// Take a status code and return it
+	ReturnStatusCode(context.Context, *StatusCode) (*StatusCodeResponse, error)
 	mustEmbedUnimplementedPostServiceServer()
 }
 
@@ -130,7 +130,7 @@ func (UnimplementedPostServiceServer) GetBoard(context.Context, *BoardID) (*Boar
 func (UnimplementedPostServiceServer) DeleteBoard(context.Context, *BoardID) (*BoardRequest, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteBoard not implemented")
 }
-func (UnimplementedPostServiceServer) ReturnStatusCode(context.Context, *StatusCode) (*StatusCodeRequest, error) {
+func (UnimplementedPostServiceServer) ReturnStatusCode(context.Context, *StatusCode) (*StatusCodeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReturnStatusCode not implemented")
 }
 func (UnimplementedPostServiceServer) mustEmbedUnimplementedPostServiceServer() {}

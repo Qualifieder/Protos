@@ -23,7 +23,7 @@ const (
 
 type StatusCode struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Code          int32                  `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
+	Code          int32                  `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"` // числовой код gRPC статуса (0-16)
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -65,27 +65,30 @@ func (x *StatusCode) GetCode() int32 {
 	return 0
 }
 
-type StatusCodeRequest struct {
+// Сообщение для ответа
+type StatusCodeResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Info          string                 `protobuf:"bytes,1,opt,name=info,proto3" json:"info,omitempty"`
+	Message       string                 `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`                                // текстовое сообщение
+	ReceivedCode  int32                  `protobuf:"varint,2,opt,name=received_code,json=receivedCode,proto3" json:"received_code,omitempty"` // полученный код
+	StatusName    string                 `protobuf:"bytes,3,opt,name=status_name,json=statusName,proto3" json:"status_name,omitempty"`        // название статуса
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *StatusCodeRequest) Reset() {
-	*x = StatusCodeRequest{}
+func (x *StatusCodeResponse) Reset() {
+	*x = StatusCodeResponse{}
 	mi := &file_remote_workspace_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *StatusCodeRequest) String() string {
+func (x *StatusCodeResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*StatusCodeRequest) ProtoMessage() {}
+func (*StatusCodeResponse) ProtoMessage() {}
 
-func (x *StatusCodeRequest) ProtoReflect() protoreflect.Message {
+func (x *StatusCodeResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_remote_workspace_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -97,14 +100,28 @@ func (x *StatusCodeRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use StatusCodeRequest.ProtoReflect.Descriptor instead.
-func (*StatusCodeRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use StatusCodeResponse.ProtoReflect.Descriptor instead.
+func (*StatusCodeResponse) Descriptor() ([]byte, []int) {
 	return file_remote_workspace_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *StatusCodeRequest) GetInfo() string {
+func (x *StatusCodeResponse) GetMessage() string {
 	if x != nil {
-		return x.Info
+		return x.Message
+	}
+	return ""
+}
+
+func (x *StatusCodeResponse) GetReceivedCode() int32 {
+	if x != nil {
+		return x.ReceivedCode
+	}
+	return 0
+}
+
+func (x *StatusCodeResponse) GetStatusName() string {
+	if x != nil {
+		return x.StatusName
 	}
 	return ""
 }
@@ -220,22 +237,25 @@ const file_remote_workspace_proto_rawDesc = "" +
 	"\x16remote_workspace.proto\x12\x05proto\" \n" +
 	"\n" +
 	"StatusCode\x12\x12\n" +
-	"\x04code\x18\x01 \x01(\x05R\x04code\"'\n" +
-	"\x11StatusCodeRequest\x12\x12\n" +
-	"\x04info\x18\x01 \x01(\tR\x04info\"\x19\n" +
+	"\x04code\x18\x01 \x01(\x05R\x04code\"t\n" +
+	"\x12StatusCodeResponse\x12\x18\n" +
+	"\amessage\x18\x01 \x01(\tR\amessage\x12#\n" +
+	"\rreceived_code\x18\x02 \x01(\x05R\freceivedCode\x12\x1f\n" +
+	"\vstatus_name\x18\x03 \x01(\tR\n" +
+	"statusName\"\x19\n" +
 	"\aBoardID\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"Q\n" +
 	"\fBoardRequest\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x0e\n" +
 	"\x02id\x18\x02 \x01(\tR\x02id\x12\x1d\n" +
 	"\n" +
-	"posts_list\x18\x03 \x01(\fR\tpostsList2\x93\x02\n" +
+	"posts_list\x18\x03 \x01(\fR\tpostsList2\x94\x02\n" +
 	"\vPostService\x12*\n" +
 	"\x03Put\x12\x13.proto.BoardRequest\x1a\x0e.proto.BoardID\x122\n" +
 	"\vCreateBoard\x12\x13.proto.BoardRequest\x1a\x0e.proto.BoardID\x12/\n" +
 	"\bGetBoard\x12\x0e.proto.BoardID\x1a\x13.proto.BoardRequest\x122\n" +
-	"\vDeleteBoard\x12\x0e.proto.BoardID\x1a\x13.proto.BoardRequest\x12?\n" +
-	"\x10ReturnStatusCode\x12\x11.proto.StatusCode\x1a\x18.proto.StatusCodeRequestB\x1aZ\x18github.com/protos/gen/gob\x06proto3"
+	"\vDeleteBoard\x12\x0e.proto.BoardID\x1a\x13.proto.BoardRequest\x12@\n" +
+	"\x10ReturnStatusCode\x12\x11.proto.StatusCode\x1a\x19.proto.StatusCodeResponseB\x1aZ\x18github.com/protos/gen/gob\x06proto3"
 
 var (
 	file_remote_workspace_proto_rawDescOnce sync.Once
@@ -251,10 +271,10 @@ func file_remote_workspace_proto_rawDescGZIP() []byte {
 
 var file_remote_workspace_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_remote_workspace_proto_goTypes = []any{
-	(*StatusCode)(nil),        // 0: proto.StatusCode
-	(*StatusCodeRequest)(nil), // 1: proto.StatusCodeRequest
-	(*BoardID)(nil),           // 2: proto.BoardID
-	(*BoardRequest)(nil),      // 3: proto.BoardRequest
+	(*StatusCode)(nil),         // 0: proto.StatusCode
+	(*StatusCodeResponse)(nil), // 1: proto.StatusCodeResponse
+	(*BoardID)(nil),            // 2: proto.BoardID
+	(*BoardRequest)(nil),       // 3: proto.BoardRequest
 }
 var file_remote_workspace_proto_depIdxs = []int32{
 	3, // 0: proto.PostService.Put:input_type -> proto.BoardRequest
@@ -266,7 +286,7 @@ var file_remote_workspace_proto_depIdxs = []int32{
 	2, // 6: proto.PostService.CreateBoard:output_type -> proto.BoardID
 	3, // 7: proto.PostService.GetBoard:output_type -> proto.BoardRequest
 	3, // 8: proto.PostService.DeleteBoard:output_type -> proto.BoardRequest
-	1, // 9: proto.PostService.ReturnStatusCode:output_type -> proto.StatusCodeRequest
+	1, // 9: proto.PostService.ReturnStatusCode:output_type -> proto.StatusCodeResponse
 	5, // [5:10] is the sub-list for method output_type
 	0, // [0:5] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
