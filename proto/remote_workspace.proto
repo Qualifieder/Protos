@@ -14,8 +14,11 @@ service PostService {
   rpc DeleteBoard(BoardID) returns(BoardRequest); 
 
   //Metrics
+
+  // Take a status code and return it
   rpc ReturnStatusCode(StatusCode) returns (StatusCodeRequest);
 }
+
 
 message StatusCode {
   int32 code = 1;
